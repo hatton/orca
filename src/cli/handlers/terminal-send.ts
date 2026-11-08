@@ -1,6 +1,9 @@
 import type { RuntimeTerminalSend } from '../../shared/runtime-types'
 import '../../shared/protocol-version'
-import { TERMINAL_PROMPT_DELIVERY_RUNTIME_CAPABILITY } from '../../shared/terminal/runtime-policy/terminal-runtime-capabilities'
+import {
+  TERMINAL_PROMPT_DELIVERY_RUNTIME_CAPABILITY,
+  TERMINAL_SEND_REFUSE_DRAFT_RUNTIME_CAPABILITY
+} from '../../shared/terminal/runtime-policy/terminal-runtime-capabilities'
 import type { CommandHandler } from '../dispatch'
 import { formatTerminalSend, printResult, terminalSendWarnings } from '../format'
 import { getOptionalPositiveIntegerFlag, getOptionalStringFlag } from '../flags'
@@ -30,6 +33,7 @@ export const terminalSendHandler: CommandHandler = async ({ flags, client, cwd, 
   }
   const waitSubmitMs = waitSubmitSeconds ? waitSubmitSeconds * 1000 : undefined
   let promptDeliverySupported = false
+  let refuseDraftSupported = false
   let promptDeliveryRuntimeId: string | null = null
   if (promptCandidate) {
     const status = await client.getCliStatus()
@@ -42,7 +46,17 @@ export const terminalSendHandler: CommandHandler = async ({ flags, client, cwd, 
     promptDeliverySupported =
       status.result.runtime.capabilities?.includes(TERMINAL_PROMPT_DELIVERY_RUNTIME_CAPABILITY) ===
       true
+    refuseDraftSupported =
+      status.result.runtime.capabilities?.includes(
+        TERMINAL_SEND_REFUSE_DRAFT_RUNTIME_CAPABILITY
+      ) === true
     promptDeliveryRuntimeId = status.result.runtime.runtimeId
+  }
+  if (refuseDraft && !refuseDraftSupported) {
+    throw new RuntimeClientError(
+      'incompatible_runtime',
+      'This Orca host does not support --refuse-draft. No input was sent; update Orca on the execution host.'
+    )
   }
   if (retryRequest && !promptDeliverySupported) {
     throw new RuntimeClientError(

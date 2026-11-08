@@ -23,8 +23,11 @@ export abstract class OrcaRuntimeWithCreateAgentPromptRenderGate extends OrcaRun
       return
     }
     const screen = await this.readCurrentTerminalWaitScreen(ptyId).catch(() => null)
+    if (!screen) {
+      throw new Error('agent_prompt_draft_unverified')
+    }
     // Why the screen's draft second: where the provider owns the grid, main keeps no headless model.
-    if (screen && (this.readCaughtUpComposerTypedText(ptyId) ?? screen.draft)) {
+    if (this.readCaughtUpComposerTypedText(ptyId) ?? screen.draft) {
       throw new Error('agent_prompt_draft_present')
     }
   }

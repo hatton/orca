@@ -31,6 +31,9 @@ export const TERMINAL_CREATE_SHELL_SELECTION_RUNTIME_CAPABILITY =
 // Why: an older host strips terminal.split's `retrySplit` and splits again, duplicating the command.
 export const TERMINAL_SPLIT_RETRY_RUNTIME_CAPABILITY = 'terminal.split-retry.v1' as const
 
+// Why: an older host strips terminal.send's `refuseDraft` and pastes onto a person's unsent text.
+export const TERMINAL_SEND_REFUSE_DRAFT_RUNTIME_CAPABILITY =
+  'terminal.send-refuse-draft.v1' as const
 export const TERMINAL_RUNTIME_CAPABILITIES = [
   TERMINAL_ORDERED_INPUT_CAPABILITY,
   TERMINAL_LIMIT_RUNTIME_CAPABILITY,
@@ -45,5 +48,6 @@ export const TERMINAL_RUNTIME_CAPABILITIES = [
   ...TERMINAL_QUICK_COMMAND_RUNTIME_CAPABILITIES,
   TERMINAL_CREATE_IDEMPOTENCY_RUNTIME_CAPABILITY,
   TERMINAL_CREATE_SHELL_SELECTION_RUNTIME_CAPABILITY,
-  TERMINAL_SPLIT_RETRY_RUNTIME_CAPABILITY
+  TERMINAL_SPLIT_RETRY_RUNTIME_CAPABILITY,
+  TERMINAL_SEND_REFUSE_DRAFT_RUNTIME_CAPABILITY
 ] as const

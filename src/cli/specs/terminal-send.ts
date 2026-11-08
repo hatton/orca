@@ -20,7 +20,7 @@ export const TERMINAL_SEND_COMMAND_SPEC: CommandSpec = {
     "Without --enter, --text is written to the PTY verbatim, so control bytes pass through (Bash/Zsh: --text $'\\x1b' for Escape, $'\\x15' for Ctrl+U).",
     'With --enter and without --interrupt, a prompt to a recognized running agent is bracketed-pasted and embedded Escape bytes are made inert.',
     'For a text-plus-Enter agent prompt, the result separates input acceptance from observed submission and turn start.',
-    "--refuse-draft fails with agent_prompt_draft_present, sending nothing, while the agent's composer holds text someone typed but did not send.",
+    "--refuse-draft fails with agent_prompt_draft_present, sending nothing, while the agent's composer holds text someone typed but did not send, and with agent_prompt_draft_unverified when the target is not a recognized agent or its composer cannot be read.",
     '--wait-submit only observes the accepted prompt for the requested duration; timeout returns the queued/input-accepted receipt and never resends.',
     'After an ambiguous transport failure, reissue the exact command with the reported --retry-request ID. The ID is bound to the prompt payload and exact terminal process incarnation.',
     'Older hosts accept the legacy raw input but report provider old-host and do not offer idempotent retry or submission observation.'

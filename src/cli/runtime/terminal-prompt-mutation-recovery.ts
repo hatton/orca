@@ -1,7 +1,6 @@
 import { attachMutationRecovery } from './client-error-recovery'
 import { RuntimeClientError, RuntimeRpcFailureError } from './types'
 import { PLUGIN_HOOK_DENIED_CODE } from '../../shared/plugins/contributions/plugin-hook-contribution'
-
 const INSPECT_STEP = 'Inspect the terminal output and agent state without sending input.'
 
 export function attachDurableMutationRecovery(
@@ -18,7 +17,10 @@ export function attachDurableMutationRecovery(
     return attachMutationRecovery(error, requestId, originalCommand)
   }
   // Nothing was written, so a retry is a new send once the person has sent or cleared their text.
-  if (error instanceof RuntimeClientError && error.code === 'agent_prompt_draft_present') {
+  if (
+    error.code === 'agent_prompt_draft_present' ||
+    error.code === 'agent_prompt_draft_unverified'
+  ) {
     return error
   }
   // Why: a text-plus-Enter prompt refuses a menu; text-only and bare-Enter sends stay direct input.
