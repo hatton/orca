@@ -12,10 +12,7 @@ import type {
   RuntimePtyWorktreeRecord
 } from '../records/runtime-terminal-state-records'
 import { buildRuntimeTerminalVisualLayouts } from '../layout/runtime-terminal-visual-layout'
-import {
-  keepSelectedTerminalsWithinLimit,
-  resolveWorkspaceActivePaneKey
-} from './terminal-active-pane'
+import { resolveWorkspaceActivePaneKey } from './terminal-active-pane'
 import {
   includeTargetResolvedWorktree,
   type ResolvedWorktree
@@ -170,14 +167,14 @@ export class RuntimeTerminalList {
       }
       return activePaneKeys.get(worktreeId) ?? null
     }
-    const listed = keepSelectedTerminalsWithinLimit(
-      matching.map((terminal) =>
+    // Why the order stays as is: plugins check terminal membership against this cut-off listing.
+    const listed = matching
+      .slice(0, limit)
+      .map((terminal) =>
         activePaneKeyOf(terminal.worktreeId) === `${terminal.tabId}:${terminal.leafId}`
           ? { ...terminal, activeInWorkspace: true as const }
           : terminal
-      ),
-      limit
-    )
+      )
     const visualLayouts =
       opts.includeVisualLayouts === false
         ? []
