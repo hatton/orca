@@ -1,4 +1,23 @@
 // Allowlist worker environment to exclude shell/CI credentials from third-party code.
+import { getAppEnvironment, hasAppEnvironment } from '../../../shared/app-environment'
+import { prependOrcaCliDirToChildPath } from '../../cli/orca-cli-child-path'
+
+/** A worker's `orca` reaches the Orca that runs it, as its terminals' does; ORCA_CLI_COMMAND names that CLI. */
+export function withOrcaCli(env: Record<string, string>): Record<string, string> {
+  if (!hasAppEnvironment()) {
+    return env
+  }
+  const app = getAppEnvironment()
+  const launcher = prependOrcaCliDirToChildPath(env, {
+    isPackaged: app.isPackaged(),
+    userDataPath: app.getPath('userData'),
+    resourcesPath: (process as { resourcesPath?: string }).resourcesPath ?? null
+  })
+  if (launcher) {
+    env.ORCA_CLI_COMMAND = launcher
+  }
+  return env
+}
 
 const WORKER_ENV_ALLOWLIST = [
   'PATH',
