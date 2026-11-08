@@ -21,6 +21,8 @@ export type RuntimeWorktreeAgentSource = Pick<AgentStatusIpcPayload, 'subagents'
   agentType: string | null
   /** Names the provider session whose saved title the row may wear. */
   providerSessionId?: string
+  /** The provider session's transcript file, when its hook reported one. */
+  providerTranscriptPath?: string
   prompt: string
   lastAssistantMessage: string | null
   toolName: string | null

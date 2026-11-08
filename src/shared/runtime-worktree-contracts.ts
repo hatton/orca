@@ -42,6 +42,8 @@ export type RuntimeWorktreeAgentRow = {
   displayName: string | null
   /** The name desktop's compact row leads with (rename, chat or live title). Old hosts omit it. */
   conversationName?: string
+  /** The agent's own session (e.g. Claude's session_id) and the transcript its hook reported. Old hosts omit it. */
+  providerSession?: { id: string; transcriptPath?: string }
   lastAssistantMessage: string | null
   toolName: string | null
   toolInput: string | null

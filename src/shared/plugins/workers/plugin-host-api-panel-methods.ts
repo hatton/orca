@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { PLUGIN_EVENT_NAMES } from '../contributions/plugin-event-contribution'
 import { ALL_SURFACES, FRAMES_ONLY, spec } from './plugin-host-method-spec'
 import { AGENT_STATUS_STATES } from '../../agent-status/contracts/agent-status-types'
+import { pluginProviderSessionSchema } from './plugin-provider-session'
 import {
   PLUGIN_PANEL_REQUEST_MAX_TIMEOUT_MS,
   pluginBridgeNameSchema
@@ -29,7 +30,11 @@ const agentsListResult = z.object({
         agent: z.string().max(128).nullable(),
         state: z.enum(AGENT_STATUS_STATES),
         /** When it entered `state`, in ms since the epoch. */
-        stateStartedAt: z.number().finite()
+        stateStartedAt: z.number().finite(),
+        /** `tabId:leafId`, as `agent.status.changed` names the pane. Since 1.4.253. */
+        paneKey: z.string().min(1).max(2048).optional(),
+        /** The agent's own session (Claude's `session_id`) and its transcript file, once its hook reported them. Since 1.4.253. */
+        providerSession: pluginProviderSessionSchema.optional()
       })
     )
     .max(PLUGIN_AGENT_LIST_LIMIT)
