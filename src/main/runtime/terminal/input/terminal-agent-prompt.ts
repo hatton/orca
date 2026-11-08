@@ -40,6 +40,8 @@ export abstract class OrcaRuntimeWithWriteTerminalAgentPrompt extends OrcaRuntim
     ...args: Parameters<OrcaRuntimeWithCreateAgentPromptRenderGate['createAgentPromptRenderGate']>
   ): ReturnType<OrcaRuntimeWithCreateAgentPromptRenderGate['createAgentPromptRenderGate']>
 
+  protected abstract assertComposerClear(ptyId: string, onDraft?: 'refuse'): Promise<void>
+
   protected assertAgentPromptExpectedBinding(
     handle: string,
     expected: AgentPromptExpectedBinding | undefined
@@ -130,6 +132,7 @@ export abstract class OrcaRuntimeWithWriteTerminalAgentPrompt extends OrcaRuntim
     }
     let baseline: AgentPromptActivity
     try {
+      await this.assertComposerClear(ptyId, options.onDraft)
       await beforeWrite(admissionSignal)
       assertWritable(admissionSignal)
       if (options.onPermission === 'wait') {

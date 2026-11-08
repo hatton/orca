@@ -215,6 +215,7 @@ export const TERMINAL_SEND_METHODS = [
                 inputKind: 'driving',
                 inputSource,
                 beforeWrite,
+                ...(params.refuseDraft ? { onDraft: 'refuse' as const } : {}),
                 observationSignal: signal,
                 ...(orchestrationMutation
                   ? {

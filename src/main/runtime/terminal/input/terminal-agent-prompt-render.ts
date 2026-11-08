@@ -17,6 +17,18 @@ const AGENT_PROMPT_RENDER_DRAFT_SETTLE_MS = 300
 const CLAUDE_AGENT_PROMPT_RENDER_MARKER = '\x1b[?25h'
 
 export abstract class OrcaRuntimeWithCreateAgentPromptRenderGate extends OrcaRuntimeWithSubmitTerminalAgentPrompt {
+  /** Under `refuse`, pasting onto a person's unsent composer text would submit both as one prompt. */
+  protected async assertComposerClear(ptyId: string, onDraft?: 'refuse'): Promise<void> {
+    if (onDraft !== 'refuse') {
+      return
+    }
+    const screen = await this.readCurrentTerminalWaitScreen(ptyId).catch(() => null)
+    // Why the screen's draft second: where the provider owns the grid, main keeps no headless model.
+    if (screen && (this.readCaughtUpComposerTypedText(ptyId) ?? screen.draft)) {
+      throw new Error('agent_prompt_draft_present')
+    }
+  }
+
   protected createAgentPromptRenderGate(
     ptyId: string,
     pasteIngestMs: number,

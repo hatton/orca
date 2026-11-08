@@ -17,6 +17,10 @@ export function attachDurableMutationRecovery(
   if (method !== 'terminal.send' || !requestId || !(error instanceof RuntimeClientError)) {
     return attachMutationRecovery(error, requestId, originalCommand)
   }
+  // Nothing was written, so a retry is a new send once the person has sent or cleared their text.
+  if (error instanceof RuntimeClientError && error.code === 'agent_prompt_draft_present') {
+    return error
+  }
   // Why: a text-plus-Enter prompt refuses a menu; text-only and bare-Enter sends stay direct input.
   const menuHint =
     error.code === 'agent_prompt_blocked'

@@ -18,10 +18,11 @@ export const terminalSendHandler: CommandHandler = async ({ flags, client, cwd, 
   const promptCandidate = !!text && enter && !interrupt
   const retryRequest = readRetryRequestFlag(flags)
   const waitSubmitSeconds = getOptionalPositiveIntegerFlag(flags, 'wait-submit')
-  if ((retryRequest || waitSubmitSeconds) && !promptCandidate) {
+  const refuseDraft = flags.get('refuse-draft') === true
+  if ((retryRequest || waitSubmitSeconds || refuseDraft) && !promptCandidate) {
     throw new RuntimeClientError(
       'invalid_argument',
-      '--retry-request and --wait-submit require --text with --enter and without --interrupt.'
+      '--retry-request, --wait-submit and --refuse-draft require --text with --enter and without --interrupt.'
     )
   }
   if (waitSubmitSeconds && waitSubmitSeconds > 3600) {
@@ -63,7 +64,8 @@ export const terminalSendHandler: CommandHandler = async ({ flags, client, cwd, 
     ...(promptCandidate
       ? {
           agentPrompt: true as const,
-          ...(waitSubmitMs ? { waitSubmitMs } : {})
+          ...(waitSubmitMs ? { waitSubmitMs } : {}),
+          ...(refuseDraft ? { refuseDraft: true as const } : {})
         }
       : {}),
     client: { id: 'orca-cli', type: 'desktop' }
