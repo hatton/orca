@@ -1,22 +1,25 @@
 import type { EnrichedAgentHookEventPayload } from '../agent-hooks/server/server-types'
 import type { PluginAgentStatusChangedPayload } from '../../shared/plugins/events/plugin-events'
+import { pluginProviderSession } from './workers/plugin-workspace-projection'
 
 /** Exclude restored rows from live automation triggers; optional mainAgent preserves old-host compatibility. */
 export function projectPluginAgentStatusChangedPayload(
   enriched: Pick<
     EnrichedAgentHookEventPayload,
-    'worktreeId' | 'paneKey' | 'receivedAt' | 'restoredUnconfirmed' | 'payload'
+    'worktreeId' | 'paneKey' | 'receivedAt' | 'restoredUnconfirmed' | 'payload' | 'providerSession'
   >
 ): PluginAgentStatusChangedPayload | null {
   if (enriched.restoredUnconfirmed) {
     return null
   }
   const mainAgent = enriched.payload.mainAgent
+  const providerSession = pluginProviderSession(enriched.providerSession)
   return {
     workspaceId: enriched.worktreeId ?? null,
     paneKey: enriched.paneKey,
     state: enriched.payload.state,
     receivedAt: enriched.receivedAt,
+    ...(providerSession ? { providerSession } : {}),
     ...(mainAgent
       ? {
           mainAgent: {

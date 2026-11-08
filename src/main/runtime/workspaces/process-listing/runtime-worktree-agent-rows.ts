@@ -64,6 +64,16 @@ export function attachRuntimeWorktreeAgentRows(args: {
       taskTitle: orchestration?.taskTitle ?? null,
       displayName: orchestration?.displayName ?? null,
       ...(conversationName ? { conversationName } : {}),
+      ...(source.providerSessionId
+        ? {
+            providerSession: {
+              id: source.providerSessionId,
+              ...(source.providerTranscriptPath
+                ? { transcriptPath: source.providerTranscriptPath }
+                : {})
+            }
+          }
+        : {}),
       lastAssistantMessage: source.lastAssistantMessage,
       toolName: source.toolName,
       toolInput: source.toolInput,

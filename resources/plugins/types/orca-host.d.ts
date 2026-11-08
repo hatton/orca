@@ -133,7 +133,7 @@ declare module 'orca/host' {
     /** The agents in the focused workspace: their terminal, title, agent kind and status. `agent.status.changed` reports each change after. Since host API 1.2. */
     "agents.list": {
       params: Record<string, never> | undefined
-      result: { agents: { terminalId: string | null; title: string | null; agent: string | null; state: "working" | "blocked" | "waiting" | "done"; stateStartedAt: number }[] }
+      result: { agents: { terminalId: string | null; title: string | null; agent: string | null; state: "working" | "blocked" | "waiting" | "done"; stateStartedAt: number; paneKey?: string; providerSession?: { id: string; transcriptPath?: string } }[] }
       surfaces: "worker" | "panel" | "editor"
     }
     /** Delivers a workspace or agent event to this panel as `orca.on(event)`; needs the event's read capability. The frame APIs call it for you. Since host API 1.2. */
@@ -227,7 +227,7 @@ declare module 'orca/host' {
     /** A worktree workspace was removed. */
     "workspace.removed": { workspaceId: string; kind: "worktree" | "folder"; path: string }
     /** An agent in a terminal pane changed status; `workspaceId` is null when Orca cannot tie the pane to a workspace, and `terminalId` names its terminal when Orca lists it. */
-    "agent.status.changed": { workspaceId: string | null; paneKey: string; terminalId?: string; title?: string; state: "working" | "blocked" | "waiting" | "done"; receivedAt: number; mainAgent?: { state: "working" | "blocked" | "waiting" | "done"; outcome?: "success" | "failure" | "cancellation" | "superseded" | "interruption" | "unconfirmed"; stateStartedAt: number } }
+    "agent.status.changed": { workspaceId: string | null; paneKey: string; terminalId?: string; title?: string; providerSession?: { id: string; transcriptPath?: string }; state: "working" | "blocked" | "waiting" | "done"; receivedAt: number; mainAgent?: { state: "working" | "blocked" | "waiting" | "done"; outcome?: "success" | "failure" | "cancellation" | "superseded" | "interruption" | "unconfirmed"; stateStartedAt: number } }
     /** The focused workspace changed, or its terminals were opened, closed or renamed; `context` is what `workspace.readContext` now answers. Each new subscriber first gets the current context. */
     "workspace.changed": { context: { branch: string; displayName: string; terminals: { id: string; title?: string }[] } | null }
   }

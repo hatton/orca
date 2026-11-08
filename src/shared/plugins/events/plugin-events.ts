@@ -7,6 +7,7 @@ import {
   PLUGIN_WORKSPACE_LABEL_MAX_LENGTH,
   pluginWorkspaceContextSchema
 } from '../workers/plugin-host-api'
+import { pluginProviderSessionSchema } from '../workers/plugin-provider-session'
 
 /**
  * Payload contracts for the v0 plugin event set (workspace lifecycle + agent
@@ -51,6 +52,8 @@ export const agentStatusChangedPayloadSchema = z.object({
   terminalId: z.string().min(1).max(PLUGIN_TERMINAL_ID_MAX_LENGTH).optional(),
   /** The pane's name, or its terminal title. */
   title: z.string().max(PLUGIN_WORKSPACE_LABEL_MAX_LENGTH).optional(),
+  /** The agent's own session (Claude's `session_id`) and its transcript file, once its hook reported them. Since 1.4.253. */
+  providerSession: pluginProviderSessionSchema.optional(),
   /** The combined status the user sees: `working` while the main agent or any live child works. */
   state: z.enum(AGENT_STATUS_STATES),
   receivedAt: z.number().finite().positive(),

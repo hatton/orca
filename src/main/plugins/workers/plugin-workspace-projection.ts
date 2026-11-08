@@ -18,6 +18,24 @@ export type PluginWorkspaceTerminal = {
   paneKey?: string
 }
 
+/** The agent's own session and transcript, as plugins see them. */
+export type PluginProviderSession = { id: string; transcriptPath?: string }
+
+/** Only the session id and transcript path reach plugins. */
+export function pluginProviderSession(
+  session: { id?: string; transcriptPath?: string } | undefined
+): PluginProviderSession | undefined {
+  if (!session?.id) {
+    return undefined
+  }
+  return {
+    id: session.id.slice(0, 1024),
+    ...(session.transcriptPath
+      ? { transcriptPath: session.transcriptPath.slice(0, 32 * 1024) }
+      : {})
+  }
+}
+
 /** One agent row from the hook server's status store (the fields plugins may see). */
 export type PluginAgentStatusRow = {
   paneKey: string
@@ -27,6 +45,7 @@ export type PluginAgentStatusRow = {
   agentType?: string
   stateStartedAt: number
   providerSessionOnly?: boolean
+  providerSession?: { id?: string; transcriptPath?: string }
 }
 
 export type PluginWorkspaceContext = z.output<typeof pluginWorkspaceContextSchema>
@@ -83,12 +102,15 @@ export function projectPluginWorkspaceAgents(
     .slice(0, PLUGIN_AGENT_LIST_LIMIT)
     .map((row) => {
       const terminal = terminalForPane(terminals, row)
+      const providerSession = pluginProviderSession(row.providerSession)
       return {
         terminalId: terminal?.id ?? null,
         title: terminal?.title ?? null,
         agent: row.agentType?.slice(0, 128) ?? null,
         state: row.state,
-        stateStartedAt: row.stateStartedAt
+        stateStartedAt: row.stateStartedAt,
+        paneKey: row.paneKey.slice(0, 2048),
+        ...(providerSession ? { providerSession } : {})
       }
     })
 }
