@@ -70,7 +70,7 @@ HTML panels and custom editors get these CSS variables from Orca's active theme,
 ## Methods
 
 - `workspace.readContext` (capability `workspace:read`; worker, panel, editor; since 1.0): Branch, name and terminal ids of the focused workspace, or null when none is focused.
-  `(params?: {}) => { branch: string; displayName: string; terminals: { id: string; title?: string }[] } | null`
+  `(params?: {}) => { branch: string; displayName: string; terminals: { id: string; title?: string }[]; activeTerminalId?: string } | null`
 - `terminal.sendText` (capability `terminal:send`; worker; since 1.0): Types text into one terminal named by id, optionally pressing Enter.
   `(params: { terminalId: string; text: string; enter?: boolean }) => { accepted: boolean }`
 - `notifications.show` (capability `notifications:show`; worker, panel, editor; since 1.0): Shows a desktop notification.

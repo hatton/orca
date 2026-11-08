@@ -12,6 +12,7 @@ import type {
   RuntimePtyWorktreeRecord
 } from '../records/runtime-terminal-state-records'
 import { buildRuntimeTerminalVisualLayouts } from '../layout/runtime-terminal-visual-layout'
+import { resolveWorkspaceActivePaneKey } from './terminal-active-pane'
 import {
   includeTargetResolvedWorktree,
   type ResolvedWorktree
@@ -158,8 +159,15 @@ export class RuntimeTerminalList {
     const matching = requestedHandles
       ? terminals.filter((terminal) => requestedHandles.has(terminal.handle))
       : terminals
-    const listed = matching.slice(0, limit)
     const snapshots = this.deps.getSnapshots()
+    const listed = matching
+      .slice(0, limit)
+      .map((terminal) =>
+        resolveWorkspaceActivePaneKey(snapshots.get(terminal.worktreeId)) ===
+        `${terminal.tabId}:${terminal.leafId}`
+          ? { ...terminal, activeInWorkspace: true as const }
+          : terminal
+      )
     const visualLayouts =
       opts.includeVisualLayouts === false
         ? []

@@ -46,6 +46,8 @@ export type RuntimeTerminalSummary = {
   verdict?: PtyLivenessVerdict['status']
   /** Only when the caller asked for it; absent on older hosts. */
   attention?: RuntimeTerminalAttention
+  /** The pane its workspace has selected, the one a person sees when the workspace is shown. Absent otherwise and on older hosts. */
+  activeInWorkspace?: true
 }
 
 /** Use of a PTY that its host's own window can't see: a remote client showing it, or input from anywhere. */
