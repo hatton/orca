@@ -247,8 +247,22 @@ describe('agents.list projection', () => {
         }
       ])
     ).toEqual([
-      { terminalId: null, title: null, agent: null, state: 'done', stateStartedAt: 9 },
-      { terminalId: 'term_a', title: 'codex', agent: 'codex', state: 'working', stateStartedAt: 5 }
+      {
+        terminalId: null,
+        title: null,
+        agent: null,
+        state: 'done',
+        stateStartedAt: 9,
+        paneKey: 'gone'
+      },
+      {
+        terminalId: 'term_a',
+        title: 'codex',
+        agent: 'codex',
+        state: 'working',
+        stateStartedAt: 5,
+        paneKey: `tab0:${LEAF}`
+      }
     ])
   })
 })
