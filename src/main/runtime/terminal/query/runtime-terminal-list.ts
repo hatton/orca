@@ -12,7 +12,10 @@ import type {
   RuntimePtyWorktreeRecord
 } from '../records/runtime-terminal-state-records'
 import { buildRuntimeTerminalVisualLayouts } from '../layout/runtime-terminal-visual-layout'
-import { resolveWorkspaceActivePaneKey } from './terminal-active-pane'
+import {
+  keepSelectedTerminalsWithinLimit,
+  resolveWorkspaceActivePaneKey
+} from './terminal-active-pane'
 import {
   includeTargetResolvedWorktree,
   type ResolvedWorktree
@@ -160,14 +163,21 @@ export class RuntimeTerminalList {
       ? terminals.filter((terminal) => requestedHandles.has(terminal.handle))
       : terminals
     const snapshots = this.deps.getSnapshots()
-    const listed = matching
-      .slice(0, limit)
-      .map((terminal) =>
-        resolveWorkspaceActivePaneKey(snapshots.get(terminal.worktreeId)) ===
-        `${terminal.tabId}:${terminal.leafId}`
+    const activePaneKeys = new Map<string, string | null>()
+    const activePaneKeyOf = (worktreeId: string): string | null => {
+      if (!activePaneKeys.has(worktreeId)) {
+        activePaneKeys.set(worktreeId, resolveWorkspaceActivePaneKey(snapshots.get(worktreeId)))
+      }
+      return activePaneKeys.get(worktreeId) ?? null
+    }
+    const listed = keepSelectedTerminalsWithinLimit(
+      matching.map((terminal) =>
+        activePaneKeyOf(terminal.worktreeId) === `${terminal.tabId}:${terminal.leafId}`
           ? { ...terminal, activeInWorkspace: true as const }
           : terminal
-      )
+      ),
+      limit
+    )
     const visualLayouts =
       opts.includeVisualLayouts === false
         ? []
