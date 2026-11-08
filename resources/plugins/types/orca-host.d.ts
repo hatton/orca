@@ -37,7 +37,7 @@ declare module 'orca/host' {
     /** Branch, name and terminal ids of the focused workspace, or null when none is focused. Since host API 1.0. */
     "workspace.readContext": {
       params: Record<string, never> | undefined
-      result: { branch: string; displayName: string; terminals: { id: string; title?: string }[] } | null
+      result: { branch: string; displayName: string; terminals: { id: string; title?: string }[]; activeTerminalId?: string } | null
       surfaces: "worker" | "panel" | "editor"
     }
     /** Types text into one terminal named by id, optionally pressing Enter. Since host API 1.0. */
@@ -229,7 +229,7 @@ declare module 'orca/host' {
     /** An agent in a terminal pane changed status; `workspaceId` is null when Orca cannot tie the pane to a workspace, and `terminalId` names its terminal when Orca lists it. */
     "agent.status.changed": { workspaceId: string | null; paneKey: string; terminalId?: string; title?: string; state: "working" | "blocked" | "waiting" | "done"; receivedAt: number; mainAgent?: { state: "working" | "blocked" | "waiting" | "done"; outcome?: "success" | "failure" | "cancellation" | "superseded" | "interruption" | "unconfirmed"; stateStartedAt: number } }
     /** The focused workspace changed, or its terminals were opened, closed or renamed; `context` is what `workspace.readContext` now answers. Each new subscriber first gets the current context. */
-    "workspace.changed": { context: { branch: string; displayName: string; terminals: { id: string; title?: string }[] } | null }
+    "workspace.changed": { context: { branch: string; displayName: string; terminals: { id: string; title?: string }[]; activeTerminalId?: string } | null }
   }
   export type PluginEventName = keyof PluginEvents
 

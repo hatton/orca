@@ -12,6 +12,7 @@ import type {
   RuntimePtyWorktreeRecord
 } from '../records/runtime-terminal-state-records'
 import { buildRuntimeTerminalVisualLayouts } from '../layout/runtime-terminal-visual-layout'
+import { resolveWorkspaceActivePaneKey } from './terminal-active-pane'
 import {
   includeTargetResolvedWorktree,
   type ResolvedWorktree
@@ -158,8 +159,22 @@ export class RuntimeTerminalList {
     const matching = requestedHandles
       ? terminals.filter((terminal) => requestedHandles.has(terminal.handle))
       : terminals
-    const listed = matching.slice(0, limit)
     const snapshots = this.deps.getSnapshots()
+    const activePaneKeys = new Map<string, string | null>()
+    const activePaneKeyOf = (worktreeId: string): string | null => {
+      if (!activePaneKeys.has(worktreeId)) {
+        activePaneKeys.set(worktreeId, resolveWorkspaceActivePaneKey(snapshots.get(worktreeId)))
+      }
+      return activePaneKeys.get(worktreeId) ?? null
+    }
+    // Why the order stays as is: plugins check terminal membership against this cut-off listing.
+    const listed = matching
+      .slice(0, limit)
+      .map((terminal) =>
+        activePaneKeyOf(terminal.worktreeId) === `${terminal.tabId}:${terminal.leafId}`
+          ? { ...terminal, activeInWorkspace: true as const }
+          : terminal
+      )
     const visualLayouts =
       opts.includeVisualLayouts === false
         ? []

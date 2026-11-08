@@ -16,6 +16,27 @@ export type PluginWorkspaceTerminal = {
   title?: string
   /** `tabId:leafId`, which agent statuses carry. */
   paneKey?: string
+  /** The pane its workspace has selected. */
+  activeInWorkspace?: true
+}
+
+/** The runtime's terminal summary, as plugins see a workspace terminal. */
+export function pluginWorkspaceTerminal(terminal: {
+  handle: string
+  title: string | null
+  paneTitle?: string
+  tabId?: string
+  leafId?: string
+  activeInWorkspace?: true
+}): PluginWorkspaceTerminal {
+  return {
+    id: terminal.handle,
+    title: pluginTerminalTitle(terminal),
+    ...(terminal.tabId && terminal.leafId
+      ? { paneKey: `${terminal.tabId}:${terminal.leafId}` }
+      : {}),
+    ...(terminal.activeInWorkspace ? { activeInWorkspace: true as const } : {})
+  }
 }
 
 /** One agent row from the hook server's status store (the fields plugins may see). */
@@ -50,13 +71,15 @@ export function projectPluginWorkspaceContext(
   if (!context) {
     return null
   }
+  const listed = terminals
+    .filter(({ id }) => id.length > 0 && id.length <= PLUGIN_TERMINAL_ID_MAX_LENGTH)
+    .slice(0, PLUGIN_WORKSPACE_TERMINAL_LIMIT)
+  const active = listed.find((terminal) => terminal.activeInWorkspace)
   return {
     branch: shortPluginBranchName(context.branch).slice(0, PLUGIN_WORKSPACE_LABEL_MAX_LENGTH),
     displayName: context.displayName.slice(0, PLUGIN_WORKSPACE_LABEL_MAX_LENGTH),
-    terminals: terminals
-      .filter(({ id }) => id.length > 0 && id.length <= PLUGIN_TERMINAL_ID_MAX_LENGTH)
-      .slice(0, PLUGIN_WORKSPACE_TERMINAL_LIMIT)
-      .map(({ id, title }) => (title ? { id, title } : { id }))
+    terminals: listed.map(({ id, title }) => (title ? { id, title } : { id })),
+    ...(active ? { activeTerminalId: active.id } : {})
   }
 }
 

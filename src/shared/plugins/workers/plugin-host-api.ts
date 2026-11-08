@@ -54,7 +54,9 @@ export const pluginWorkspaceContextSchema = z
           })
           .strict()
       )
-      .max(PLUGIN_WORKSPACE_TERMINAL_LIMIT)
+      .max(PLUGIN_WORKSPACE_TERMINAL_LIMIT),
+    /** The terminal the workspace has selected, the one a person sees; absent when a non-terminal tab is selected. Since 1.4.253. */
+    activeTerminalId: z.string().min(1).max(PLUGIN_TERMINAL_ID_MAX_LENGTH).optional()
   })
   .strict()
   .nullable()

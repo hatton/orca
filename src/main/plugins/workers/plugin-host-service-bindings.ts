@@ -13,7 +13,7 @@ import { pluginSettingDefaults } from '../../../shared/plugins/contributions/plu
 import { PluginSecretsStore, pluginSecretsProtection } from '../plugin-secrets-store'
 import { PluginKvStore } from '../plugin-storage-store'
 import type { TerminalInputKind } from '../../../shared/terminal/input/terminal-input-kind'
-import { pluginTerminalTitle, type PluginAgentStatusRow } from './plugin-workspace-projection'
+import { pluginWorkspaceTerminal, type PluginAgentStatusRow } from './plugin-workspace-projection'
 import type { PluginAppearanceService } from '../appearance/plugin-appearance-service'
 
 export type PluginRuntimeDelegate = {
@@ -34,6 +34,7 @@ export type PluginRuntimeDelegate = {
       paneTitle?: string
       tabId?: string
       leafId?: string
+      activeInWorkspace?: true
     }[]
   }>
   sendTerminal(
@@ -95,13 +96,7 @@ export function bindPluginHostServices(input: {
         PLUGIN_WORKSPACE_TERMINAL_LIMIT,
         { includeVisualLayouts: false }
       )
-      return result.terminals.slice(0, PLUGIN_WORKSPACE_TERMINAL_LIMIT).map((terminal) => ({
-        id: terminal.handle,
-        title: pluginTerminalTitle(terminal),
-        ...(terminal.tabId && terminal.leafId
-          ? { paneKey: `${terminal.tabId}:${terminal.leafId}` }
-          : {})
-      }))
+      return result.terminals.slice(0, PLUGIN_WORKSPACE_TERMINAL_LIMIT).map(pluginWorkspaceTerminal)
     },
     listAgentStatuses: () => delegate.listAgentStatuses?.() ?? [],
     sendTerminalText: async (terminalId, action) => {
