@@ -22,6 +22,8 @@ export const FLAG_HELP_TEXT: Record<string, string> = {
   enter: '--enter                Append Enter after sending text',
   'wait-submit':
     '--wait-submit <seconds> Wait up to this long to see the prompt start a turn; never resends',
+  'refuse-draft':
+    "--refuse-draft         Send nothing while the agent's composer holds unsent text",
   'retry-request':
     '--retry-request <id>  Reissue an earlier request by its ID; replays its result instead of repeating it',
   force:

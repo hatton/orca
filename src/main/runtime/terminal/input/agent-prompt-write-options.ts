@@ -21,6 +21,8 @@ export type RuntimeAgentPromptWriteOptions = Omit<RuntimeTerminalWriteOptions, '
   onInputAccepted?: (send: RuntimeTerminalSend) => void
   /** Wait through agent_prompt_blocked permissions until answer, exit, binding change or abort. */
   onPermission?: 'refuse' | 'wait'
+  /** `refuse`: write nothing, failing with agent_prompt_draft_present while the composer holds unsent text, or agent_prompt_draft_unverified when it cannot be read. */
+  onDraft?: 'refuse'
   /** Refuse binding changes with terminal_handle_stale; never send admitted prompt text to a replacement process. */
   expectedBinding?: AgentPromptExpectedBinding
   /** Run on accepted Enter write, including OMP paste framing; later abort cannot undo submitted text. */

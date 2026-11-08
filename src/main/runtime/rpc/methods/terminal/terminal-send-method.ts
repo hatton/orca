@@ -196,6 +196,9 @@ export const TERMINAL_SEND_METHODS = [
           params.interrupt !== true &&
           params.client?.type === 'desktop' &&
           (await runtime.isTerminalRunningSettledPromptAgent(params.terminal))
+        if (params.refuseDraft && !useSettledAgentPrompt) {
+          throw new Error('agent_prompt_draft_unverified')
+        }
         const reserveWrite =
           params.inputKind !== 'query-reply' && leaf?.ptyId && mobileFloorClientId
             ? (ptyId: string): void => {
@@ -215,6 +218,7 @@ export const TERMINAL_SEND_METHODS = [
                 inputKind: 'driving',
                 inputSource,
                 beforeWrite,
+                ...(params.refuseDraft ? { onDraft: 'refuse' as const } : {}),
                 observationSignal: signal,
                 ...(orchestrationMutation
                   ? {

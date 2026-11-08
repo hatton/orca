@@ -20,6 +20,7 @@ import { TerminalSplitOutcomeError } from '../../../shared/workspace-layout/term
 import { WslHostWindowsDriveRefusalError } from '../../../shared/wsl-host-windows-drive-refusal'
 import { wslDistroHoldRpcFailure } from '../../../shared/wsl-distro-stopped-hold'
 import { LINEAR_ERROR_CODES } from '../../../shared/linear/agent-access'
+import { AGENT_PROMPT_REFUSAL_ERROR_CODES } from '../../../shared/terminal/input/agent-prompt-refusal-codes'
 import { AGENT_SESSION_RPC_ERROR_CODES } from '../../../shared/agent-session/agent-session-host-authority'
 import { ARTIFACT_SHARING_DISABLED_CODE } from '../../../shared/artifacts/artifact-sharing-gate'
 import { AGENT_SKILL_SHARING_DISABLED_CODE } from '../../../shared/agent-skill-sharing-gate'
@@ -95,7 +96,6 @@ const RUNTIME_PASSTHROUGH_CODES: ReadonlySet<string> = new Set([
   'terminal_tab_close_timeout',
   'terminal_tab_not_found',
   'terminal_tab_pinned',
-  'agent_prompt_blocked',
   'agent_prompt_stalled',
   'no_active_terminal',
   'repo_not_found',
@@ -108,7 +108,8 @@ const RUNTIME_PASSTHROUGH_CODES: ReadonlySet<string> = new Set([
   'connectors_disabled',
   'external_conversation_not_found',
   ...CONNECTOR_REPLY_ERROR_CODES,
-  ...AGENT_SESSION_RPC_ERROR_CODES
+  ...AGENT_SESSION_RPC_ERROR_CODES,
+  ...AGENT_PROMPT_REFUSAL_ERROR_CODES
 ])
 
 const COMPUTER_PASSTHROUGH_CODES: ReadonlySet<string> = new Set(Object.values(COMPUTER_ERROR_CODES))

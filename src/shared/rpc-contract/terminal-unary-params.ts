@@ -179,6 +179,8 @@ export const TerminalSend = TerminalHandle.extend({
   requireWriteSettlement: z.literal(true).optional(),
   // Why: waiting observes the same prompt receipt; it never authorizes a second write.
   waitSubmitMs: z.number().int().min(0).max(3_600_000).optional(),
+  // Older hosts strip this and paste onto unsent composer text.
+  refuseDraft: z.literal(true).optional(),
   resolvedLaunchDraft: z
     .object({
       text: z.string(),
